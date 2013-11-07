@@ -7,6 +7,8 @@ const int MAT_SIZE = WIDTH * HEIGHT;
 const int SERIAL_START_CHAR = 'A';
 const int FIRST_SERIAL_RECEIVE_CHAR = 'B'; 
 const int FINAL_SERIAL_RECEIVE_CHAR = 'C';
+const int SERIAL_READY_CHAR = 'D';
+
 
 // Enable/Disable constatnts
 const boolean ENABLE = LOW;
@@ -39,7 +41,9 @@ void setup() {
   disableDriveAndSense();
   // Init  serial port at 9600 bps
   Serial.begin(9600);
+  establishContact();
 }
+
 
 void initPins() {
   // Initialize drive pins
@@ -55,6 +59,14 @@ void initPins() {
   pinMode(SENSE_MUX0_ADDR1, OUTPUT);      
   pinMode(SENSE_MUX0_ADDR2, OUTPUT);      
   pinMode(SENSE_MUX0_ADDR3, OUTPUT);  
+}
+
+
+void establishContact() {
+  while (Serial.available() <= 0) {
+    Serial.print(SERIAL_READY_CHAR);   // send a capital A
+    delay(300);
+  }
 }
 
 
