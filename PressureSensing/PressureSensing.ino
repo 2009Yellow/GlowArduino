@@ -1,12 +1,12 @@
 // Mat constants
-const int WIDTH = 16;  // Sense pints
-const int HEIGHT = 16;  // Drive pins
+const int WIDTH = 4;  // Sense pints
+const int HEIGHT = 4;  // Drive pins
 const int MAT_SIZE = WIDTH * HEIGHT;
 
 // Serial Communcation Constants
-const char SERIAL_START_CHAR = 'A';
-const char FIRST_SERIAL_RECEIVE_CHAR = 'B'; 
-const char FINAL_SERIAL_RECEIVE_CHAR = 'C';
+const int SERIAL_START_CHAR = 'A';
+const int FIRST_SERIAL_RECEIVE_CHAR = 'B'; 
+const int FINAL_SERIAL_RECEIVE_CHAR = 'C';
 
 // Enable/Disable constatnts
 const boolean ENABLE = LOW;
@@ -23,10 +23,10 @@ const int FET_MUX_EN = 3;
 // Sense pin number constants
 const int ADC_IN_PIN = A0;
 const int SENSE_MUX0_EN = 4;
-const int SENSE_MUX0_ADDR0 = 30;
-const int SENSE_MUX0_ADDR1 = 31;
-const int SENSE_MUX0_ADDR2 = 32;
-const int SENSE_MUX0_ADDR3 = 33;
+const int SENSE_MUX0_ADDR0 = 26;
+const int SENSE_MUX0_ADDR1 = 27;
+const int SENSE_MUX0_ADDR2 = 28;
+const int SENSE_MUX0_ADDR3 = 29;
 
 
 // Mat pressure data
@@ -59,11 +59,8 @@ void initPins() {
 
 
 void loop(){
-  // Main process loop
-  while(true) {
-    // Read ADC inputs
-    processMat();
-  }
+  // Read ADC inputs
+  processMat();
 }
 
 
@@ -76,11 +73,12 @@ void loop(){
 void serialEvent() {
   while (Serial.available()) {
     // get the new byte:
-    char input = (char)Serial.read(); 
-    
+    char input = Serial.read(); 
+    //Serial.write(input);
+
     // Only start sending values if receive start char
     if (input != SERIAL_START_CHAR) {
-        return;
+        continue;
     }
     
     // Send start char of sequence
@@ -94,6 +92,13 @@ void serialEvent() {
     // Send final char of sequence
     Serial.write(FINAL_SERIAL_RECEIVE_CHAR);
   } // end serial available
+}
+
+
+void serialInterrupt() {
+  if (Serial.available()) {
+    serialEvent();
+  }
 }
 
 
@@ -115,10 +120,11 @@ void putHalfByte(int data, int startAddr){
 void processMat() {
   for (int j = 0; j < HEIGHT ; ++j) {
     for (int i = 0; i < WIDTH; ++i) {
+      serialInterrupt();
       // Setup mat pins
       configureMat(i,j);
       // Read ADC value
-      adcValues[j * WIDTH + i] = analogRead(ADC_IN_PIN);
+      adcValues[j * WIDTH + i] = analogRead(ADC_IN_PIN) >> 2;
     }
   }
 }
