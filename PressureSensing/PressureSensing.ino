@@ -34,14 +34,17 @@ const int SENSE_MUX0_ADDR3 = 29;
 // Mat pressure data
 int adcValues [MAT_SIZE];
 
+
 void setup() {
   // Init all digital and analog pins
   initPins();
   // Init mux state
-  disableDriveAndSense();
+  disableDrive();
   // Init  serial port at 9600 bps
   Serial.begin(9600);
   establishContact();
+  // Enable all analog pins
+  digitalWrite(SENSE_MUX0_EN, HIGH);
 }
 
 
@@ -51,7 +54,9 @@ void initPins() {
   pinMode(DRIVE_MUX_ADDR0, OUTPUT);      
   pinMode(DRIVE_MUX_ADDR1, OUTPUT);      
   pinMode(DRIVE_MUX_ADDR2, OUTPUT);      
-  pinMode(DRIVE_MUX_ADDR3, OUTPUT);      
+  pinMode(DRIVE_MUX_ADDR3, OUTPUT); 
+  pinMode(FET_MUX_EN, OUTPUT);
+  
 
   // Initialize sense pins
   pinMode(SENSE_MUX0_EN, OUTPUT);      
@@ -64,7 +69,7 @@ void initPins() {
 
 void establishContact() {
   while (Serial.available() <= 0) {
-    Serial.print(SERIAL_READY_CHAR);   // send a capital A
+    Serial.write(SERIAL_READY_CHAR);   // send a capital A
     delay(300);
   }
 }
@@ -117,9 +122,11 @@ void serialInterrupt() {
 void putHalfByte(int data, int startAddr){
   byte mask;
   int addr;
+  //Serial.println("putHalfByteData " + String(data));
   for (int i = 0; i < 4; ++i) {
     mask = 0x01 << i;  // Get bitmask
     addr = startAddr + i;
+    //Serial.println("byte " + String(i) + " data " + (data & mask) + " at addr " + addr);
     if (data & mask) {
       digitalWrite(addr,HIGH);
     } else {
@@ -144,7 +151,7 @@ void processMat() {
 
 void configureMat(int i, int j) {
   // Disable AND MUX drive during switch
-  disableDriveAndSense();
+  disableDrive();
   // Set drive address
   putHalfByte(j, DRIVE_MUX_ADDR0);
   // Set sense address
@@ -152,26 +159,24 @@ void configureMat(int i, int j) {
   switch (senseMuxSel) {
     case 0:
       putHalfByte(i, SENSE_MUX0_ADDR0);
-      digitalWrite(SENSE_MUX0_EN, ENABLE);
+      //digitalWrite(SENSE_MUX0_EN, ENABLE);
       break;
   }
   // Enable drive now switch is complete
   enableDrive();
-
 }
 
 
 void enableDrive() {
   // Disable drive and fet muxes (grounds all drive pins)
-  digitalWrite(FET_MUX_EN, ENABLE);
-  digitalWrite(DRIVE_MUX_EN, ENABLE);
+  digitalWrite(FET_MUX_EN, HIGH);
+  digitalWrite(DRIVE_MUX_EN, HIGH);
 }
 
 
-void disableDriveAndSense() {
+void disableDrive() {
   // Disable drive and fet muxes (grounds all drive pins)
-  digitalWrite(DRIVE_MUX_EN, DISABLE);
-  digitalWrite(FET_MUX_EN, DISABLE);
-  // Disable all sense muxes
-  digitalWrite(SENSE_MUX0_EN, DISABLE);
+  digitalWrite(DRIVE_MUX_EN, LOW);
+  digitalWrite(FET_MUX_EN, LOW);
+
 }
