@@ -4,10 +4,16 @@ const int HEIGHT = 4;  // Drive pins
 const int MAT_SIZE = WIDTH * HEIGHT;
 
 // Serial Communcation Constants
-const int SERIAL_START_CHAR = 'A';
-const int FIRST_SERIAL_RECEIVE_CHAR = 'B'; 
-const int FINAL_SERIAL_RECEIVE_CHAR = 'C';
-const int SERIAL_READY_CHAR = 'D';
+const int SERIAL_ESTABLISH_CONTACT_CHAR = 'A';
+
+const int SERIAL_PRESSURE_START_CHAR = 'B';
+const int SERIAL_PRESSURE_FIRST_RECEIVE_CHAR = 'C'; 
+const int SERIAL_PRESSURE_FINAL_RECEIVE_CHAR = 'D';
+
+const int SERIAL_LIGHT_START_CHAR = 'E';
+const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
+const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'G';
+const int SERIAL_LIGHT_ERROR_CHAR = 'H';
 
 
 // Enable/Disable constatnts
@@ -30,14 +36,14 @@ const int SENSE_MUX0_ADDR1 = 27;
 const int SENSE_MUX0_ADDR2 = 28;
 const int SENSE_MUX0_ADDR3 = 29;
 
-
 // Mat pressure data
 int adcValues [MAT_SIZE];
-
 
 void setup() {
   // Init all digital and analog pins
   initPins();
+  // Init the lights
+  initLights();
   // Init mux state
   disableDrive();
   // Init  serial port at 9600 bps
@@ -63,13 +69,13 @@ void initPins() {
   pinMode(SENSE_MUX0_ADDR0, OUTPUT);      
   pinMode(SENSE_MUX0_ADDR1, OUTPUT);      
   pinMode(SENSE_MUX0_ADDR2, OUTPUT);      
-  pinMode(SENSE_MUX0_ADDR3, OUTPUT);  
+  pinMode(SENSE_MUX0_ADDR3, OUTPUT);
 }
 
 
 void establishContact() {
   while (Serial.available() <= 0) {
-    Serial.write(SERIAL_READY_CHAR);   // send a capital A
+    Serial.write(SERIAL_ESTABLISH_CONTACT_CHAR);   // send a capital A
     delay(300);
   }
 }
@@ -94,22 +100,31 @@ void serialEvent() {
     //Serial.write(input);
 
     // Only start sending values if receive start char
-    if (input != SERIAL_START_CHAR) {
-        continue;
+    if (input == SERIAL_PRESSURE_START_CHAR) {
+      sendPressureData();
+    } else if (input == SERIAL_LIGHT_START_CHAR) {
+      recieveLightData();
+    } else {
+      // Do nothing
+      continue; 
     }
-    
-    // Send start char of sequence
-    Serial.write(FIRST_SERIAL_RECEIVE_CHAR);
-
-    // Send payload data
-    for (int i = 0; i < MAT_SIZE; ++i) {
-        Serial.write(adcValues[i]);
-    }
-
-    // Send final char of sequence
-    Serial.write(FINAL_SERIAL_RECEIVE_CHAR);
   } // end serial available
 }
+
+
+void sendPressureData() {
+  // Send start char of sequence
+  Serial.write(SERIAL_PRESSURE_FIRST_RECEIVE_CHAR);
+  
+  // Send payload data
+  for (int i = 0; i < MAT_SIZE; ++i) {
+      Serial.write(adcValues[i]);
+  }
+  
+  // Send final char of sequence
+  Serial.write(SERIAL_PRESSURE_FINAL_RECEIVE_CHAR);
+}
+
 
 
 void serialInterrupt() {
