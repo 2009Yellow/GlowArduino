@@ -12,8 +12,9 @@ const int SERIAL_PRESSURE_FINAL_RECEIVE_CHAR = 'D';
 
 const int SERIAL_LIGHT_START_CHAR = 'E';
 const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
-const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'G';
-const int SERIAL_LIGHT_ERROR_CHAR = 'H';
+const int SERIAL_LIGHT_SWITCH_TO_COLOR_CHAR = 'G';
+const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'H';
+const int SERIAL_LIGHT_ERROR_CHAR = 'I';
 
 
 // Enable/Disable constatnts
@@ -39,6 +40,11 @@ const int SENSE_MUX0_ADDR3 = 29;
 // Mat pressure data
 int adcValues [MAT_SIZE];
 
+// Light data
+char lightLocs [4];
+char lightColors [4];
+int numContactAreas = 4;
+
 void setup() {
   // Init all digital and analog pins
   initPins();
@@ -62,7 +68,7 @@ void initPins() {
   pinMode(DRIVE_MUX_ADDR2, OUTPUT);      
   pinMode(DRIVE_MUX_ADDR3, OUTPUT); 
   pinMode(FET_MUX_EN, OUTPUT);
-  
+
 
   // Initialize sense pins
   pinMode(SENSE_MUX0_EN, OUTPUT);      
@@ -102,9 +108,11 @@ void serialEvent() {
     // Only start sending values if receive start char
     if (input == SERIAL_PRESSURE_START_CHAR) {
       sendPressureData();
-    } else if (input == SERIAL_LIGHT_START_CHAR) {
-      //receiveLightData();
-    } else {
+    } 
+    else if (input == SERIAL_LIGHT_START_CHAR) {
+      receiveLightData();
+    } 
+    else {
       // Do nothing
       continue; 
     }
@@ -112,20 +120,45 @@ void serialEvent() {
 }
 
 void receiveLightData() {
-  
+
   char input = Serial.read();
   if (input != SERIAL_LIGHT_FIRST_RECEIVE_CHAR) {
-    int trash = Serial.readBytesUntil(SERIAL_LIGHT_FINAL_RECEIVE_CHAR, new int[100], 100);
+    char buffer[10];
+    int trash = Serial.readBytesUntil((char)SERIAL_LIGHT_FINAL_RECEIVE_CHAR, buffer, 100);
+    return;
+  }
   
+  //reading in light locations
+  for( int i = 0; i<sizeof(lightLocs); i++ ){
+    int integerValue = 0;
+    while(1) {            // force into a loop until 'n' is received
+      byte high_byte = Serial.read();
+      if (high_byte == -1) {i--; continue;}  // if no characters are in the buffer read() returns -1
+      byte low_byte = Serial.read();
+      if (low_byte == -1) {low_byte = 0;}
+      integerValue = (low_byte + (high_byte << 8));
+    }
+    lightLocs[i] = (integerValue);   // Do something with the value
+  }
+  
+  char nextVal = Serial.read();
+  if(nextVal != SERIAL_LIGHT_SWITCH_TO_COLOR_CHAR) {
+    return;
+  }
+  
+  Serial.readBytesUntil(SERIAL_LIGHT_FINAL_RECEIVE_CHAR, lightColors, 4);
+}
+
+
 void sendPressureData() {
   // Send start char of sequence
   Serial.write(SERIAL_PRESSURE_FIRST_RECEIVE_CHAR);
-  
+
   // Send payload data
   for (int i = 0; i < MAT_SIZE; ++i) {
-      Serial.write(adcValues[i]);
+    Serial.write(adcValues[i]);
   }
-  
+
   // Send final char of sequence
   Serial.write(SERIAL_PRESSURE_FINAL_RECEIVE_CHAR);
 }
@@ -149,7 +182,8 @@ void putHalfByte(int data, int startAddr){
     //Serial.println("byte " + String(i) + " data " + (data & mask) + " at addr " + addr);
     if (data & mask) {
       digitalWrite(addr,HIGH);
-    } else {
+    } 
+    else {
       digitalWrite(addr,LOW);
     }
   }
@@ -177,10 +211,10 @@ void configureMat(int i, int j) {
   // Set sense address
   int senseMuxSel = i / 16;
   switch (senseMuxSel) {
-    case 0:
-      putHalfByte(i, SENSE_MUX0_ADDR0);
-      //digitalWrite(SENSE_MUX0_EN, ENABLE);
-      break;
+  case 0:
+    putHalfByte(i, SENSE_MUX0_ADDR0);
+    //digitalWrite(SENSE_MUX0_EN, ENABLE);
+    break;
   }
   // Enable drive now switch is complete
   enableDrive();
@@ -200,3 +234,4 @@ void disableDrive() {
   digitalWrite(FET_MUX_EN, LOW);
 
 }
+
