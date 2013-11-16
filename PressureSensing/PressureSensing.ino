@@ -43,7 +43,7 @@ void setup() {
   // Init all digital and analog pins
   initPins();
   // Init the lights
-  initLights();
+  //initLights();
   // Init mux state
   disableDrive();
   // Init  serial port at 9600 bps
@@ -103,7 +103,7 @@ void serialEvent() {
     if (input == SERIAL_PRESSURE_START_CHAR) {
       sendPressureData();
     } else if (input == SERIAL_LIGHT_START_CHAR) {
-      recieveLightData();
+      //receiveLightData();
     } else {
       // Do nothing
       continue; 
@@ -111,7 +111,12 @@ void serialEvent() {
   } // end serial available
 }
 
-
+void receiveLightData() {
+  
+  char input = Serial.read();
+  if (input != SERIAL_LIGHT_FIRST_RECEIVE_CHAR) {
+    int trash = Serial.readBytesUntil(SERIAL_LIGHT_FINAL_RECEIVE_CHAR, new int[100], 100);
+  
 void sendPressureData() {
   // Send start char of sequence
   Serial.write(SERIAL_PRESSURE_FIRST_RECEIVE_CHAR);
