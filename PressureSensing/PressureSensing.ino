@@ -1,3 +1,11 @@
+#include "LPD8806.h"
+#include "SPI.h"
+//Light Initialization
+int dataPin = 2;
+int clockPin = 3;
+int nLEDs = 572;
+LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
+
 // Mat constants
 const int WIDTH = 4;  // Sense pints
 const int HEIGHT = 4;  // Drive pins
@@ -49,7 +57,8 @@ void setup() {
   // Init all digital and analog pins
   initPins();
   // Init the lights
-  //initLights();
+  strip.begin();
+  strip.show();
   // Init mux state
   disableDrive();
   // Init  serial port at 9600 bps
@@ -111,6 +120,7 @@ void serialEvent() {
     } 
     else if (input == SERIAL_LIGHT_START_CHAR) {
       receiveLightData();
+      updateLights();
     } 
     else {
       // Do nothing
@@ -149,7 +159,24 @@ void receiveLightData() {
   Serial.readBytesUntil(SERIAL_LIGHT_FINAL_RECEIVE_CHAR, lightColors, 4);
 }
 
-
+void updateLights(){
+  for (int i = 0; i <4; i ++){
+    if(lightColors[i] !=0){
+    switch(lightColors[i]){
+      case 1:
+        strip.setPixelColor(lightLocs[i], strip.Color(60, 10, 120));
+        break;
+      case 2:
+        strip.setPixelColor(lightLocs[i], strip.Color(50, 50, 50));
+        break;
+      case 3:
+        strip.setPixelColor(lightLocs[i], strip.Color(100, 10, 10));
+        break;
+    }
+    }
+  }
+  strip.show();
+}
 void sendPressureData() {
   // Send start char of sequence
   Serial.write(SERIAL_PRESSURE_FIRST_RECEIVE_CHAR);
