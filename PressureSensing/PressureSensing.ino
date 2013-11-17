@@ -22,6 +22,7 @@ const int SERIAL_LIGHT_ERROR_CHAR = 'H';
 //const int SERIAL_LIGHT_ERROR_CHAR = 'I';
 
 
+
 // Enable/Disable constatnts
 const boolean ENABLE = LOW;
 const boolean DISABLE = HIGH;
@@ -56,6 +57,7 @@ void setup() {
   disableDrive();
   // Init  serial port at 9600 bps
   Serial.begin(9600);
+  pixelsOff();
   establishContact();
   // Enable all analog pins
   digitalWrite(SENSE_MUX0_EN, HIGH);
@@ -90,6 +92,7 @@ void establishContact() {
 
 void loop(){
   // Read ADC inputs
+  
   processMat();
 }
 
@@ -111,7 +114,8 @@ void serialEvent() {
       sendPressureData();
     } 
     else if (input == SERIAL_LIGHT_START_CHAR) {
-      recieveLightData();
+      digitalWrite(13, HIGH);
+      receiveLightData();
       updateLights();
     } 
     else {
