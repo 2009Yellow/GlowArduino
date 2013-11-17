@@ -2,9 +2,9 @@
 #include "SPI.h"
 
 // Light Constants
-#define STRIP_PURPLE (strip.Color(30, 0, 60))
-#define STRIP_RED (strip.Color(120, 30, 30))
-#define STRIP_WHITE (strip.Color(30, 30, 30))
+#define STRIP_PURPLE (strip.Color(60, 10, 120))
+#define STRIP_RED (strip.Color(100, 10, 10))
+#define STRIP_WHITE (strip.Color(50, 50, 50))
 
 //Light Initialization
 int dataPin = 2;
@@ -79,33 +79,32 @@ void updateLights(){
   int count = 0;
   for (int i = 0; i <4; i ++){
     if(lightLocs[i] !=0){
-    switch(lightColors[i]){
-      case 1:
-        makeHexagon(lightLocs[i], STRIP_PURPLE);
-        strip.setPixelColor(lightLocs[i], strip.Color(60, 10, 120));
-        break;
-      case 2:
-        makeHexagon(lightLocs[i], STRIP_WHITE);
-        strip.setPixelColor(lightLocs[i], strip.Color(50, 50, 50));
-        count++;
-        break;
-      case 3:
-        makeHexagon(lightLocs[i], STRIP_RED);
-        strip.setPixelColor(lightLocs[i], strip.Color(100, 10, 10));
-        break;
-    }
+      switch(lightColors[i]){
+        case 1:
+          makeHexagon(lightLocs[i], STRIP_PURPLE);
+          break;
+        case 2:
+          makeHexagon(lightLocs[i], STRIP_WHITE);
+          count++;
+          break;
+        case 3:
+          makeHexagon(lightLocs[i], STRIP_RED);
+          break;
+      }
     }
   }
+  
   if (count == 4){
-    
+    lightEdges();
+  }
   strip.show();
 }
+
 void lightEdges(){
   for(int i = 0; i < 52; i ++){
     strip.setPixelColor(i, STRIP_WHITE);
     strip.setPixelColor(i + 520, STRIP_WHITE);
   }
-  strip.show();
 }
 
 void pixelsOff(){
