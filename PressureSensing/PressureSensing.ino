@@ -1,11 +1,3 @@
-#include "LPD8806.h"
-#include "SPI.h"
-//Light Initialization
-int dataPin = 2;
-int clockPin = 3;
-int nLEDs = 572;
-LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
-
 // Mat constants
 const int WIDTH = 4;  // Sense pints
 const int HEIGHT = 4;  // Drive pins
@@ -20,9 +12,14 @@ const int SERIAL_PRESSURE_FINAL_RECEIVE_CHAR = 'D';
 
 const int SERIAL_LIGHT_START_CHAR = 'E';
 const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
-const int SERIAL_LIGHT_SWITCH_TO_COLOR_CHAR = 'G';
-const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'H';
-const int SERIAL_LIGHT_ERROR_CHAR = 'I';
+const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'G';
+const int SERIAL_LIGHT_ERROR_CHAR = 'H';
+
+//const int SERIAL_LIGHT_START_CHAR = 'E';
+//const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
+//const int SERIAL_LIGHT_SWITCH_TO_COLOR_CHAR = 'G';
+//const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'H';
+//const int SERIAL_LIGHT_ERROR_CHAR = 'I';
 
 
 // Enable/Disable constatnts
@@ -48,17 +45,13 @@ const int SENSE_MUX0_ADDR3 = 29;
 // Mat pressure data
 int adcValues [MAT_SIZE];
 
-// Light data
-char lightLocs [4];
-char lightColors [4];
-int numContactAreas = 4;
+
 
 void setup() {
   // Init all digital and analog pins
   initPins();
   // Init the lights
-  strip.begin();
-  strip.show();
+  initLights();
   // Init mux state
   disableDrive();
   // Init  serial port at 9600 bps
@@ -77,7 +70,6 @@ void initPins() {
   pinMode(DRIVE_MUX_ADDR2, OUTPUT);      
   pinMode(DRIVE_MUX_ADDR3, OUTPUT); 
   pinMode(FET_MUX_EN, OUTPUT);
-
 
   // Initialize sense pins
   pinMode(SENSE_MUX0_EN, OUTPUT);      
@@ -112,14 +104,14 @@ void serialEvent() {
   while (Serial.available()) {
     // get the new byte:
     char input = Serial.read(); 
-    //Serial.write(input);
-
+    //Serial.println("serialEvent:" + String(input));
+    
     // Only start sending values if receive start char
     if (input == SERIAL_PRESSURE_START_CHAR) {
       sendPressureData();
     } 
     else if (input == SERIAL_LIGHT_START_CHAR) {
-      receiveLightData();
+      recieveLightData();
       updateLights();
     } 
     else {
@@ -129,54 +121,8 @@ void serialEvent() {
   } // end serial available
 }
 
-void receiveLightData() {
 
-  char input = Serial.read();
-  if (input != SERIAL_LIGHT_FIRST_RECEIVE_CHAR) {
-    char buffer[10];
-    int trash = Serial.readBytesUntil((char)SERIAL_LIGHT_FINAL_RECEIVE_CHAR, buffer, 100);
-    return;
-  }
-  
-  //reading in light locations
-  for( int i = 0; i<sizeof(lightLocs); i++ ){
-    int integerValue = 0;
-    while(1) {            // force into a loop until 'n' is received
-      byte high_byte = Serial.read();
-      if (high_byte == -1) {i--; continue;}  // if no characters are in the buffer read() returns -1
-      byte low_byte = Serial.read();
-      if (low_byte == -1) {low_byte = 0;}
-      integerValue = (low_byte + (high_byte << 8));
-    }
-    lightLocs[i] = (integerValue);   // Do something with the value
-  }
-  
-  char nextVal = Serial.read();
-  if(nextVal != SERIAL_LIGHT_SWITCH_TO_COLOR_CHAR) {
-    return;
-  }
-  
-  Serial.readBytesUntil(SERIAL_LIGHT_FINAL_RECEIVE_CHAR, lightColors, 4);
-}
 
-void updateLights(){
-  for (int i = 0; i <4; i ++){
-    if(lightColors[i] !=0){
-    switch(lightColors[i]){
-      case 1:
-        strip.setPixelColor(lightLocs[i], strip.Color(60, 10, 120));
-        break;
-      case 2:
-        strip.setPixelColor(lightLocs[i], strip.Color(50, 50, 50));
-        break;
-      case 3:
-        strip.setPixelColor(lightLocs[i], strip.Color(100, 10, 10));
-        break;
-    }
-    }
-  }
-  strip.show();
-}
 void sendPressureData() {
   // Send start char of sequence
   Serial.write(SERIAL_PRESSURE_FIRST_RECEIVE_CHAR);
