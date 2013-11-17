@@ -16,6 +16,7 @@ LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
 int lightLocs [4];
 int lightColors[4];
 int numContactAreas = 4;
+int columns[] = {52, 104, 156, 208, 260, 312, 364, 416, 468, 520, 572}; //max pixel num for each column, use for hexagon calculation
 
 void initLights() {
   // Initialize the light pins
@@ -75,20 +76,77 @@ void recieveLightData() {
 
 
 void updateLights(){
+  int count = 0;
   for (int i = 0; i <4; i ++){
-    if(lightColors[i] !=0){
+    if(lightLocs[i] !=0){
     switch(lightColors[i]){
       case 1:
+        makeHexagon(lightLocs[i], STRIP_PURPLE);
         strip.setPixelColor(lightLocs[i], strip.Color(60, 10, 120));
         break;
       case 2:
+        makeHexagon(lightLocs[i], STRIP_WHITE);
         strip.setPixelColor(lightLocs[i], strip.Color(50, 50, 50));
+        count++;
         break;
       case 3:
+        makeHexagon(lightLocs[i], STRIP_RED);
         strip.setPixelColor(lightLocs[i], strip.Color(100, 10, 10));
         break;
     }
     }
+  }
+  if (count == 4){
+    
+  strip.show();
+}
+void lightEdges(){
+  for(int i = 0; i < 52; i ++){
+    strip.setPixelColor(i, STRIP_WHITE);
+    strip.setPixelColor(i + 520, STRIP_WHITE);
+  }
+  strip.show();
+}
+
+void pixelsOff(){
+  for(int i = 0; i < strip.numPixels(); i ++){
+    strip.setPixelColor(i, strip.Color(0, 0, 0));
+  }
+  strip.show();
+}
+
+void makeHexagon(int pixel, uint32_t c){
+  int row;
+  int col;
+  int pixels[6];
+  pixels[0] = pixel + 2;
+  pixels[1] = pixel - 2;
+
+  for (int i = 0; i < 10; i ++){
+   if (pixel < columns[i]){
+     col = i;
+     break;
+   }
+  }
+   
+  if (col % 2 == 0){
+    row = pixel - columns[col - 1];
+    pixels[2] = columns[col - 1] - row - 2;
+    pixels[3] = columns[col - 1] - row ;
+    pixels[4] = columns[col + 1] - row ;
+    pixels[5] = columns[col + 1] - row - 2;
+    
+  }
+  else {
+    row = columns[col] - pixel;
+    pixels[2] = columns[col - 2] + row - 2;
+    pixels[3] = columns[col - 2] + row ;
+    pixels[4] = columns[col] + row ;
+    pixels[5] = columns[col] + row - 2;
+  }
+   
+  for(int i = 0; i < 6; i ++){
+    strip.setPixelColor(pixels[i], c);
   }
   strip.show();
 }
