@@ -7,8 +7,8 @@
 #define STRIP_WHITE (strip.Color(50, 50, 50))
 
 //Light Initialization
-int dataPin = 6;
-int clockPin = 7;
+int dataPin = 2;
+int clockPin = 3;
 int nLEDs = 572;
 LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
 
@@ -31,7 +31,7 @@ char waitToRead() {
   return Serial.read();
 }
 
-void receiveLightData() {
+void recieveLightData() {
 
   char firstChar = waitToRead();
   //Serial.println("firstChar: " + String(firstChar)); 
@@ -44,16 +44,11 @@ void receiveLightData() {
   for (int i = 0; i < 4; ++i) {
     int value = 0;
     // Read high byte
-    value += ((int)waitToRead())*256;
+    value += ((int)waitToRead()) << 8;
     // Read low byte
     value += ((int)waitToRead());
     // Update value
-    if(lightLocs[i] != value){
-      lightLocs[i] = value;
-      pixelsOff();
-    }
-    //strip.setPixelColor(value, strip.Color(0, 100, 0));
-    //strip.show();
+    lightLocs[i] = value;
   }
 
   // Read color values
