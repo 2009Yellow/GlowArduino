@@ -1,6 +1,6 @@
 // Mat constants
-const int WIDTH = 4;  // Sense pints
-const int HEIGHT = 4;  // Drive pins
+const int WIDTH = 16;  // Sense pints
+const int HEIGHT = 16;  // Drive pins
 const int MAT_SIZE = WIDTH * HEIGHT;
 
 // Serial Communcation Constants
