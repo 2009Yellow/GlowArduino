@@ -1,6 +1,6 @@
 // Mat constants
-const int WIDTH = 4;  // Sense pints
-const int HEIGHT = 4;  // Drive pins
+const int WIDTH = 16;  // Sense pints
+const int HEIGHT = 16;  // Drive pins
 const int MAT_SIZE = WIDTH * HEIGHT;
 
 // Serial Communcation Constants
@@ -55,7 +55,7 @@ void setup() {
   // Init mux state
   disableDrive();
   // Init  serial port at 9600 bps
-  Serial.begin(9600);
+  Serial.begin(115200);
   establishContact();
   // Enable all analog pins
   digitalWrite(SENSE_MUX0_EN, HIGH);
@@ -171,6 +171,8 @@ void processMat() {
       configureMat(i,j);
       // Read ADC value
       adcValues[j * WIDTH + i] = analogRead(ADC_IN_PIN) >> 2;
+      //delay(10);
+      //adcValues[j * WIDTH + i] = analogRead(ADC_IN_PIN) >> 2;
     }
   }
 }
