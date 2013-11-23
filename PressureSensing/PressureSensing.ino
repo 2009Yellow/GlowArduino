@@ -86,6 +86,14 @@ void establishContact() {
     Serial.write(SERIAL_ESTABLISH_CONTACT_CHAR);   // send a capital A
     delay(300);
   }
+  
+ /* startSequence();
+  delay(1000);
+  startSequence();
+  delay(1000);
+  pixelsOff();*/
+  
+  
 }
 
 
