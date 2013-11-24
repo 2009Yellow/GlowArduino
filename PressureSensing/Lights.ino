@@ -42,7 +42,6 @@ void receiveLightData() {
   }
   
   // Read position values
-  digitalWrite(13,HIGH);
   for (int i = 0; i < 4; ++i) {
     int value = 0;
     // Read high byte

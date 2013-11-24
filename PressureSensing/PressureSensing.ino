@@ -121,7 +121,6 @@ void serialEvent() {
       sendPressureData();
     } 
     else if (input == SERIAL_LIGHT_START_CHAR) {
-      digitalWrite(13, HIGH);
       receiveLightData();
       updateLights();
     } 
