@@ -14,6 +14,7 @@ const int SERIAL_LIGHT_START_CHAR = 'E';
 const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
 const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'G';
 const int SERIAL_LIGHT_ERROR_CHAR = 'H';
+const int SERIAL_LIGHT_FINISHED_UPDATING_CHAR = 'I';
 
 //const int SERIAL_LIGHT_START_CHAR = 'E';
 //const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
@@ -123,6 +124,7 @@ void serialEvent() {
     else if (input == SERIAL_LIGHT_START_CHAR) {
       receiveLightData();
       updateLights();
+      Serial.write(SERIAL_LIGHT_FINISHED_UPDATING_CHAR);
     } 
     else {
       // Do nothing
