@@ -42,6 +42,7 @@ void receiveLightData() {
   }
   
   // Read position values
+  digitalWrite(13,HIGH);
   for (int i = 0; i < 4; ++i) {
     int value = 0;
     // Read high byte
@@ -52,6 +53,7 @@ void receiveLightData() {
     if(lightLocs[i] != value){
       lightLocs[i] = value;
       pixelsOff();
+      drawPressureButtons();
     }
     //strip.setPixelColor(value, strip.Color(0, 100, 0));
     //strip.show();
@@ -64,7 +66,7 @@ void receiveLightData() {
   char finalChar = waitToRead();
   //Serial.println("finalChar: " + String(finalChar)); 
   if (finalChar != SERIAL_LIGHT_FINAL_RECEIVE_CHAR) {
-    Serial.write(SERIAL_LIGHT_ERROR_CHAR);
+    //Serial.write(SERIAL_LIGHT_ERROR_CHAR);
     return;
   }
   
@@ -151,6 +153,17 @@ void makeHexagon(int pixel, uint32_t c){
    
   for(int i = 0; i < 6; i ++){
     strip.setPixelColor(pixels[i], c);
+  }
+  strip.show();
+}
+
+void drawPressureButtons(){
+  
+  int rightPixels[] = {2, 101, 106, 107, 108, 109, 98, 5, 4, 3};
+  int leftPixels[] = {12, 91, 116, 117, 118, 119, 88, 15, 14, 13};
+  for (int i = 0; i < sizeof(rightPixels); i++){
+        strip.setPixelColor(rightPixels[i], STRIP_WHITE);
+        strip.setPixelColor(leftPixels[i], STRIP_WHITE);
   }
   strip.show();
 }
