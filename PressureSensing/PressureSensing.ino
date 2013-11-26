@@ -61,7 +61,7 @@ void setup() {
   establishContact();
   // Enable all analog pins
   digitalWrite(SENSE_MUX0_EN, HIGH);
-  drawPressureButtons();
+  //drawPressureButtons();
 }
 
 

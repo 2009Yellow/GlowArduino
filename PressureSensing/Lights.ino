@@ -53,7 +53,7 @@ void receiveLightData() {
     if(lightLocs[i] != value){
       lightLocs[i] = value;
       pixelsOff();
-      drawPressureButtons();
+      //drawPressureButtons();
     }
     //strip.setPixelColor(value, strip.Color(0, 100, 0));
     //strip.show();
