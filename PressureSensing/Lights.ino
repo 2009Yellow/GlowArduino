@@ -15,6 +15,7 @@ LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
 // light data
 int lightLocs [4];
 int lightColors[4];
+int lightDirections[4];
 int numContactAreas = 4;
 int columns[] = {52, 104, 156, 208, 260, 312, 364, 416, 468, 520, 572}; //max pixel num for each column, use for hexagon calculation
 
@@ -61,6 +62,10 @@ void receiveLightData() {
   // Read color values
   for (int i = 0; i < 4; ++i) {
     lightColors[i] = ((int)waitToRead());
+  }
+  
+  for (int i = 0; i<4; ++i) {
+    lightDirections[i] = ((int)waitToRead());    
   }
   
   char finalChar = waitToRead();
