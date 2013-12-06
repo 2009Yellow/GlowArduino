@@ -22,7 +22,8 @@ const int SERIAL_LIGHT_FINISHED_UPDATING_CHAR = 'I';
 //const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'H';
 //const int SERIAL_LIGHT_ERROR_CHAR = 'I';
 
-
+// Used to randomize drive pin outputs
+static int DRIVE_JUMP_TAB[16] = {0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15};
 
 // Enable/Disable constatnts
 const boolean ENABLE = LOW;
@@ -179,11 +180,12 @@ void putHalfByte(int data, int startAddr){
 void processMat() {
   for (int j = 0; j < HEIGHT ; ++j) {
     for (int i = 0; i < WIDTH; ++i) {
+      int jump_j = DRIVE_JUMP_TAB[j];
       serialInterrupt();
       // Setup mat pins
-      configureMat(i,j);
+      configureMat(i,jump_j);
       // Read ADC value
-      adcValues[j * WIDTH + i] = analogRead(ADC_IN_PIN) >> 2;
+      adcValues[jump_j * WIDTH + i] = analogRead(ADC_IN_PIN) >> 2;
       //delay(10);
       //adcValues[j * WIDTH + i] = analogRead(ADC_IN_PIN) >> 2;
     }
