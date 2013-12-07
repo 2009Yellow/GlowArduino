@@ -201,8 +201,20 @@ void processMat() {
       // Read ADC value
       int jj = HEIGHT - 1 - j;
       int ii = WIDTH - 1 - i;
-      adcValues1[jj * WIDTH + ii] = analogRead(ADC_IN_PIN1) >> 2;
-      adcValues2[j * WIDTH + i] = analogRead(ADC_IN_PIN2) >> 2;
+      int jjj;
+      if (jj % 2 == 0) {
+        jjj = jj + 1;
+      } else {
+        jjj = jj - 1;
+      }
+      int jjjj;
+      if (j % 2 == 0) {
+        jjjj = j + 1;
+      } else {
+        jjjj = j - 1;
+      }
+      adcValues1[jjj * WIDTH + ii] = analogRead(ADC_IN_PIN1) >> 2;
+      adcValues2[jjjj * WIDTH + i] = analogRead(ADC_IN_PIN2) >> 2;
       adcValues3[jj * WIDTH + i] = analogRead(ADC_IN_PIN3) >> 2;
       //delay(10);
     }
