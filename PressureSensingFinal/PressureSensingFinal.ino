@@ -9,7 +9,7 @@ const int SERIAL_ESTABLISH_CONTACT_CHAR = 'A';
 const int SERIAL_PRESSURE_START_CHAR = 'B';
 const int SERIAL_PRESSURE_FIRST_RECEIVE_CHAR = 'C'; 
 const int SERIAL_PRESSURE_FINAL_RECEIVE_CHAR = 'D';
-
+  
 const int SERIAL_LIGHT_START_CHAR = 'E';
 const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
 const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'G';
@@ -150,11 +150,17 @@ void sendPressureData() {
   // Send start char of sequence
   Serial.write(SERIAL_PRESSURE_FIRST_RECEIVE_CHAR);
 
-  // Send payload data
+  // Send payload data for each mat
+  for (int i = 0; i < MAT_SIZE; ++i) {
+    Serial.write(adcValues1[i]);
+  }
   for (int i = 0; i < MAT_SIZE; ++i) {
     Serial.write(adcValues2[i]);
   }
-
+  for (int i = 0; i < MAT_SIZE; ++i) {
+    Serial.write(adcValues3[i]);
+  }
+  
   // Send final char of sequence
   Serial.write(SERIAL_PRESSURE_FINAL_RECEIVE_CHAR);
 }
@@ -193,11 +199,12 @@ void processMat() {
       // Setup mat pins
       configureMat(i,j);
       // Read ADC value
-      adcValues1[j * WIDTH + i] = analogRead(ADC_IN_PIN1) >> 2;
+      int jj = HEIGHT - 1 - j;
+      int ii = WIDTH - 1 - i;
+      adcValues1[jj * WIDTH + ii] = analogRead(ADC_IN_PIN1) >> 2;
       adcValues2[j * WIDTH + i] = analogRead(ADC_IN_PIN2) >> 2;
-      adcValues3[j * WIDTH + i] = analogRead(ADC_IN_PIN3) >> 2;
+      adcValues3[jj * WIDTH + i] = analogRead(ADC_IN_PIN3) >> 2;
       //delay(10);
-      //adcValues[j * WIDTH + i] = analogRead(ADC_IN_PIN) >> 2;
     }
   }
 }
@@ -212,8 +219,6 @@ void configureMat(int i, int j) {
   int senseMuxSel = i / 16;
   switch (senseMuxSel) {
   case 0:
-    putHalfByte(i, SENSE_MUX0_ADDR0);
-    putHalfByte(i, SENSE_MUX0_ADDR0);
     putHalfByte(i, SENSE_MUX0_ADDR0);
     //digitalWrite(SENSE_MUX0_EN, ENABLE);
     break;

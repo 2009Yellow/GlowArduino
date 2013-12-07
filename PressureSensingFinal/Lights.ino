@@ -64,9 +64,10 @@ void receiveLightData() {
     lightColors[i] = ((int)waitToRead());
   }
   
+  /*
   for (int i = 0; i<4; ++i) {
     lightDirections[i] = ((int)waitToRead());    
-  }
+  }*/
   
   char finalChar = waitToRead();
   //Serial.println("finalChar: " + String(finalChar)); 
