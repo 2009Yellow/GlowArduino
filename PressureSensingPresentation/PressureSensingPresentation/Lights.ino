@@ -11,6 +11,7 @@ int dataPin = 6;
 int clockPin = 7;
 int nLEDs = 572;
 LPD8806 strip = LPD8806(nLEDs, dataPin, clockPin);
+boolean hasDoneAPose = false;
 
 // light data
 int lightLocs [4];
@@ -35,14 +36,14 @@ char waitToRead() {
 }
 
 void receiveLightData() {
-
+  
   char firstChar = waitToRead();
   //Serial.println("firstChar: " + String(firstChar)); 
   if (firstChar != SERIAL_LIGHT_FIRST_RECEIVE_CHAR) {
     Serial.write(SERIAL_LIGHT_ERROR_CHAR);
     return;
   }
-
+  
   // Read position values
   digitalWrite(13,HIGH);
   for (int i = 0; i < 4; ++i) {
@@ -54,7 +55,8 @@ void receiveLightData() {
     // Update value
     if(lightLocs[i] != value){
       lightLocs[i] = value;
-      pixelsOff();
+      //pixelsOff();
+      All_off();
       //drawPressureButtons();
     }
     //strip.setPixelColor(value, strip.Color(0, 100, 0));
@@ -107,9 +109,9 @@ void updateLights(){
     }
   }
 
-  if (count == 4){
+  /*if (count == 4){
     lightEdges();
-  }
+  }*/
   strip.show();
 }
 
@@ -208,17 +210,17 @@ void drawPressureButtons(){
  Serial.readBytesUntil(SERIAL_LIGHT_FINAL_RECEIVE_CHAR, lightColors, 4);
  }
  
- 
+
  
  
  */
 
 void startSequence() {
   All_off();
-
+  lightLocs[0] = 572; //so that the next pose will definitely turn off LED's
   fadeGlow();
   //Number gives timespan of effect. Color 1 is wipe color, Color 2 is "GLOW" color
-  delay(1000);
+  delay(100);
 }
 
 void All_off(){
@@ -242,7 +244,7 @@ void fadeGlow(){
   int green = 0;
   while(red < 120){
     for(int i = 0; i < 84; i ++){
-      strip.setPixelColor(translate(letters[i]), strip.Color(red, green, 0));
+      strip.setPixelColor(translate(pixels[i]), strip.Color(red, green, 0));
     }
     strip.show();
     red = red + 1;
