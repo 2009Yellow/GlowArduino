@@ -5,6 +5,7 @@
 #define STRIP_PURPLE (strip.Color(60, 10, 120))
 #define STRIP_RED (strip.Color(100, 10, 10))
 #define STRIP_WHITE (strip.Color(50, 50, 50))
+#define STRIP_GREEN (strip.Color(10, 100, 10))
 
 //Light Initialization
 int dataPin = 6;
@@ -88,7 +89,7 @@ void receiveLightData() {
 
 
 
-void updateLights(){
+/*void updateLights(){
   int count = 0;
   for (int i = 0; i <4; i ++){
     if(lightLocs[i] !=0){
@@ -111,6 +112,54 @@ void updateLights(){
     lightEdges();
   }
   strip.show();
+}*/
+
+//CHANGED THIS FOR DIFFERENT COLORS AND SHAPES
+void updateLights(){
+  boolean handsOnMat = true;
+  for(int i = 0; i<4; i++){
+    if(lightLocs[i]== 0){
+      handsOnMat = false; //for our limited number of poses
+    }
+  }
+  for (int i = 0; i <4; i ++){
+    if(lightLocs[i] != 0){
+      switch(lightColors[i]){
+      case 1:
+        if(handsOnMat && i<2){
+         makeDiamond(lightLocs[i], STRIP_WHITE);
+         break;
+         } 
+        makeHexagon(lightLocs[i], STRIP_WHITE);
+        break;
+
+      case 2:
+        if(handsOnMat && i<2){
+         makeDiamond(lightLocs[i], STRIP_WHITE);
+         break;
+        }
+        makeHexagon(lightLocs[i], STRIP_WHITE);
+        break;
+
+      case 3:
+        if(handsOnMat && i<2){
+         makeDiamond(lightLocs[i], STRIP_RED);
+         break;
+         }
+        makeHexagon(lightLocs[i], STRIP_RED);
+        break;
+        
+      case 4:
+        if(handsOnMat && i<2){
+         makeDiamond(lightLocs[i], STRIP_GREEN);
+         break;
+         }
+        makeHexagon(lightLocs[i], STRIP_GREEN);
+        break;
+      }
+    }
+  }
+  strip.show();
 }
 
 void lightEdges(){
@@ -123,6 +172,38 @@ void lightEdges(){
 void pixelsOff(){
   for(int i = 0; i < strip.numPixels(); i ++){
     strip.setPixelColor(i, strip.Color(0, 0, 0));
+  }
+  strip.show();
+}
+
+void makeDiamond(int pixel, uint32_t c){
+  int row;
+  int col;
+  int pixels[4];
+  pixels[0] = pixel + 2;
+  pixels[1] = pixel - 2;
+
+  for (int i = 0; i < 10; i ++){
+    if (pixel < columns[i]){
+      col = i;
+      break;
+    }
+  }
+
+  if (col % 2 == 0){
+    row = pixel - columns[col - 1];
+    pixels[2] = columns[col - 1] - row -1;
+    pixels[3] = columns[col + 1] - row -1;
+
+  }
+  else {
+    row = columns[col] - pixel;
+    pixels[2] = columns[col - 2] + row - 1;
+    pixels[3] = columns[col] + row - 1;
+  }
+
+  for(int i = 0; i < 4; i ++){
+    strip.setPixelColor(pixels[i], c);
   }
   strip.show();
 }

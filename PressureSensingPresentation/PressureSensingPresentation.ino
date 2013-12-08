@@ -16,6 +16,9 @@ const int SERIAL_LIGHT_FINAL_RECEIVE_CHAR = 'G';
 const int SERIAL_LIGHT_ERROR_CHAR = 'H';
 const int SERIAL_LIGHT_FINISHED_UPDATING_CHAR = 'I';
 
+const int SERIAL_STARTUP_CHAR = 'J';
+const int SERIAL_FINISHED_STARTUP_CHAR = 'K';
+
 //const int SERIAL_LIGHT_START_CHAR = 'E';
 //const int SERIAL_LIGHT_FIRST_RECEIVE_CHAR = 'F'; 
 //const int SERIAL_LIGHT_SWITCH_TO_COLOR_CHAR = 'G';
@@ -128,6 +131,11 @@ void serialEvent() {
       updateLights();
       Serial.write(SERIAL_LIGHT_FINISHED_UPDATING_CHAR);
     } 
+    
+    else if (input == SERIAL_STARTUP_CHAR){
+      startSequence();
+      Serial.write(SERIAL_FINISHED_STARTUP_CHAR);
+    }
     else {
       // Do nothing
       continue; 
