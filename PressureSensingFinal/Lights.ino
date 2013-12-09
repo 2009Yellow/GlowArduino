@@ -293,14 +293,11 @@ void receiveLightData() {
 */
 
 void startSequence() {
-All_off();
-Hexgrid_fade(500); 
-//Number gives timespan of effect
-
-delay(250);
-Glow(350, strip.Color(100, 100, 100), strip.Color(100, 100, 0));
-//Number gives timespan of effect. Color 1 is wipe color, Color 2 is "GLOW" color
-delay(1000);
+  All_off();
+  lightLocs[0] = 572; //so that the next pose will definitely turn off LED's
+  fadeGlow();
+  //Number gives timespan of effect. Color 1 is wipe color, Color 2 is "GLOW" color
+  delay(100);
 }
 
 void All_off(){
@@ -333,155 +330,27 @@ void Hexgrid(uint32_t color){
         strip.show();
 }
 
-void Glow(uint32_t time, uint32_t color1, uint32_t color2){
-      int pixels[] = {101, 99, 97, 95, 93, 88, 86, 84, 82, 80, 75, 73, 71, 69, 67, 60, 54, 105, 115, 119, 131, 141, 146, 148, 152, 154, 206, 201, 196, 192, 180, 170, 166, 162, 160, 156, 209, 214, 216, 218, 223, 235, 245, 249, 254, 259, 310, 296, 284, 274, 270, 260, 313, 327, 339, 349, 353, 363, 414, 404, 400, 388, 378, 374, 364, 417, 427, 431, 443, 453, 457, 467, 517, 515, 513, 511, 509, 504, 491, 489, 487, 485, 483, 478, 468};
-      //0-16 : Col 2
-      //17-25 : Col 3
-      //26-35 : Col 4
-      //36-45 : Col 5
-      //46-51 : Col 6
-      //52-57 : Col 7
-      //58-64 : Col 8
-      //65-71 : Col 9
-      //72-84 : Col 10
-      
-      //Frame 1
-        for (int i = 0; i < 52; i++){
-        strip.setPixelColor(i, color1);
-        }
-        strip.show();
-        delay(time/11);
-        
-      //Frame 2
-        for (int i = 52; i < 104; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 0; i < 52; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 3
-        for (int i = 104; i < 156; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 52; i < 104; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 0; i < 17; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 4
-        for (int i = 156; i < 208; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 104; i < 156; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 17; i < 26; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 5
-        for (int i = 208; i < 260; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 156; i < 208; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 26; i < 36; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 6
-        for (int i = 260; i < 312; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 208; i < 260; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 36; i < 46; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-      
-        //Frame 7
-        for (int i = 312; i < 364; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 260; i < 312; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 46; i < 52; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 8
-        for (int i = 364; i < 416; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 312; i < 364; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 52; i < 58; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 9
-        for (int i = 416; i < 468; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 364; i < 416; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 58; i < 65; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 10
-        for (int i = 468; i < 520; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 416; i < 468; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 65; i < 72; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 11
-        for (int i = 520; i < 572; i++){
-        strip.setPixelColor(i, color1);
-        }
-        for (int i = 468; i < 520; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        for (int i = 72; i < 85; i++){
-        strip.setPixelColor(pixels[i], color2);
-        }
-        strip.show();
-        delay(time/11);
-        
-        //Frame 12
-        for (int i = 520; i < 572; i++){
-        strip.setPixelColor(i, strip.Color(0,0,0));
-        }
-        strip.show();
+int translate(int ledLoc){
+  return ((11-(ledLoc/52))*52 + 51-(ledLoc%52));
+}
+
+void fadeGlow(){
+ // int pixels[] = {
+   // 101, 99, 97, 95, 93, 88, 86, 84, 82, 80, 75, 73, 71, 69, 67, 60, 54, 105, 115, 119, 131, 141, 146, 148, 152, 154, 206, 201, 196, 192, 180, 170, 166, 162, 160, 156, 209, 214, 216, 218, 223, 235, 245, 249, 254, 259, 310, 296, 284, 274, 270, 260, 313, 327, 339, 349, 353, 363, 414, 404, 400, 388, 378, 374, 364, 417, 427, 431, 443, 453, 457, 467, 517, 515, 513, 511, 509, 504, 491, 489, 487, 485, 483, 478, 468  };
+  int pixels[] = {106, 108, 110, 112, 114, 197, 219, 301, 303, 305, 214, 206, 209, 310, 313, 414, 417, 518, 522, 524, 526, 528, 530, 508, 427, 119, 192, 223, 296, 327, 400, 431, 504, 535, 121, 123, 125, 127, 132, 134, 136, 138, 140, 170, 245, 274, 349, 378, 453, 482, 556, 554, 552, 550, 548, 492, 443, 388, 339, 284, 235, 180, 561, 478, 457, 374, 353, 270, 249, 165, 147, 163, 253, 265, 255, 159, 153, 157, 259, 260, 363, 364, 467, 468, 571};
+ 
+  int red = 0;
+  int blue = 0;
+  int green = 0;
+  while(red < 120){
+    int length = sizeof(pixels)/sizeof(int);
+    for(int i = 0; i<length; i ++){
+      strip.setPixelColor(translate(pixels[i]), strip.Color(red, green, 0));
+    }
+    strip.show();
+    red = red + 1;
+    green = green + 1; 
+    delay(30);
+  }
+  
 }

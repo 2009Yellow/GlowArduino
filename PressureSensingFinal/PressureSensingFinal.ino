@@ -140,6 +140,12 @@ void serialEvent() {
       updateLights();
       Serial.write(SERIAL_LIGHT_FINISHED_UPDATING_CHAR);
     } 
+    
+    else if (input == SERIAL_STARTUP_CHAR){
+      startSequence();
+      Serial.write(SERIAL_FINISHED_STARTUP_CHAR);
+    }
+    
     else {
       // Do nothing
       continue; 
