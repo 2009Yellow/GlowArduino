@@ -305,6 +305,7 @@ void All_off(){
   for (int i = 0; i < 573; i++){
     strip.setPixelColor(i, strip.Color(0,0,0));
   }
+  strip.show();
 }
 
 
